@@ -42,7 +42,9 @@
  * Constants
  ************************************************************************/
 
-// If we are using the hardware SPI interface, these are the pins (for future ref)
+#undef DEBUG
+
+ // If we are using the hardware SPI interface, these are the pins (for future ref)
 #define sclk 13
 #define mosi 11
 #define dc   7
@@ -87,6 +89,8 @@ File bmpFile;
 int bmpWidth, bmpHeight;
 uint8_t bmpDepth, bmpImageoffset;
 
+SPISettings settings(24000000, MSBFIRST, SPI_MODE3); // Teensy 3.1 max SPI
+
 /************************************************************************
  * helper functions
  ************************************************************************/
@@ -120,7 +124,7 @@ uint32_t read32(File f) {
 // makes loading a little faster.  20 pixels seems a
 // good balance.
 
-#define BUFFPIXEL 20
+#define BUFFPIXEL 64
 
 void bmpDraw(char *filename, uint8_t x, uint8_t y) {
 
@@ -136,41 +140,54 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
   int      w, h, row, col;
   uint8_t  r, g, b;
   uint32_t pos = 0, startTime = millis();
+  int bmpInt;
 
   if((x >= tft.width()) || (y >= tft.height())) return;
 
+#ifdef DEBUG
   Serial.println();
   Serial.print("Loading image '");
   Serial.print(filename);
   Serial.println('\'');
-
+#endif
   // Open requested file on SD card
   if ((bmpFile = SD.open(filename)) == NULL) {
+#ifdef DEBUG
     Serial.print("File not found");
+#endif
     return;
   }
 
   // Parse BMP header
   if(read16(bmpFile) == 0x4D42) { // BMP signature
-    Serial.print("File size: "); Serial.println(read32(bmpFile));
+    bmpInt = read32(bmpFile);
+#ifdef DEBUG
+    Serial.print("File size: "); Serial.println(bmpInt);
+#endif
     (void)read32(bmpFile); // Read & ignore creator bytes
     bmpImageoffset = read32(bmpFile); // Start of image data
+    bmpInt = read32(bmpFile);
+#ifdef DEBUG
     Serial.print("Image Offset: "); Serial.println(bmpImageoffset, DEC);
     // Read DIB header
-    Serial.print("Header size: "); Serial.println(read32(bmpFile));
+    Serial.print("Header size: "); Serial.println(bmpInt);
+#endif
     bmpWidth  = read32(bmpFile);
     bmpHeight = read32(bmpFile);
     if(read16(bmpFile) == 1) { // # planes -- must be '1'
       bmpDepth = read16(bmpFile); // bits per pixel
+#ifdef DEBUG
       Serial.print("Bit Depth: "); Serial.println(bmpDepth);
+#endif
       if((bmpDepth == 24) && (read32(bmpFile) == 0)) { // 0 = uncompressed
 
         goodBmp = true; // Supported BMP format -- proceed!
+#ifdef DEBUG
         Serial.print("Image size: ");
         Serial.print(bmpWidth);
         Serial.print('x');
         Serial.println(bmpHeight);
-
+#endif
         // BMP rows are padded (if needed) to 4-byte boundary
         rowSize = (bmpWidth * 3 + 3) & ~3;
 
@@ -224,15 +241,20 @@ void bmpDraw(char *filename, uint8_t x, uint8_t y) {
             //tft.pushColor(tft.Color565(r,g,b));
           } // end pixel
         } // end scanline
+#ifdef DEBUG
         Serial.print("Loaded in ");
         Serial.print(millis() - startTime);
         Serial.println(" ms");
+#endif
       } // end goodBmp
     }
   }
 
   bmpFile.close();
+#ifdef DEBUG
   if(!goodBmp) Serial.println("BMP format not recognized.");
+#endif
+
 }
 
 void setupOLED () {
@@ -243,22 +265,31 @@ void setupOLED () {
 
   // initialize the OLED
   tft.begin();
-
+#ifdef DEBUG
   Serial.println("init");
-
-  tft.fillScreen(BLUE);
+#endif
+  SPI.beginTransaction(settings);
+  tft.fillScreen(WHITE);
+  SPI.endTransaction();
 
   delay(500);
-
+#ifdef DEBUG
   Serial.print("Initializing SD card...");
-
+#endif
   if (!SD.begin(SD_CS)) {
+#ifdef DEBUG
     Serial.println("failed!");
+#endif
     return;
   }
+#ifdef DEBUG
   Serial.println("SD OK!");
-  tft.fillScreen(GREEN);
-//  bmpDraw("pumpkin.bmp", 0, 0);
+#endif
+  SPI.beginTransaction(settings);
+  tft.fillScreen(BLACK);
+  bmpDraw("8ball2.bmp", 0, 0);
+  SPI.endTransaction();
+  delay(2000);
   //  tft.fillScreen(RED);
 }
 
@@ -283,17 +314,20 @@ void initSensors()
 }
 
 void setup(void) {
+#ifdef DEBUG
   Serial.begin(9600);
-
+#endif
   setupOLED();
   initSensors();
 }
+
+enum BallState { Up, Down, GoingDown, GoingUp };
 
 void loop() {
   sensors_event_t accel_event;
 //  sensors_event_t mag_event;
   sensors_vec_t   orientation;
-  static int state = 0;
+  static BallState state = Up;
 
   /* Calculate pitch and roll from the raw accelerometer data */
   accel.getEvent(&accel_event);
@@ -308,56 +342,148 @@ void loop() {
     Serial.print(orientation.pitch);
     Serial.print(F("; "));
 */
+#ifdef DEBUG
     tft.fillScreen(BLUE);
     tft.setCursor(0,0);
     tft.setTextColor(WHITE);
+    tft.setTextSize(2);
     tft.print(F("Roll: "));
     tft.print(orientation.roll);
     tft.print(F("; "));
+    tft.setCursor(0,32);
     tft.print(F("Pitch: "));
     tft.print(orientation.pitch);
     tft.print(F("; "));
+#endif
+
     switch (state) {
-    case 0:
-      if (orientation.roll > 50) {
-        state = 2;
+    case Up:
+      if (orientation.roll > -15) {
+        state = GoingDown;
       }
       break;
-    case 1:
-      if (orientation.roll <  50) {
-        state = 3;
+    case Down:
+      if (orientation.roll <  -15) {
+        state = GoingUp;
       }
       break;
-    case 2:
-      if (orientation.roll > 50) {
-        state = 1;
+    case GoingDown:
+      if (orientation.roll > -15) {
+        state = Down;
       } else {
-        state = 3;
+        state = GoingUp;
       }
       break;
-    case 3:
-      if (orientation.roll > 50) {
-        state = 2;
+    case GoingUp:
+      if (orientation.roll < -15) {
+        state = Up;
       } else {
-        state = 0;
+        state = GoingDown;
       }
       break;
     };
 
+#ifdef DEBUG
+    tft.setCursor(0,64);
     switch (state) {
-    case 0:
+    case Up:
          tft.print("upright");
          break;
-    case 1:
+    case Down:
          tft.print("down");
          break;
-    case 2:
+    case GoingDown:
          tft.print ("going down");
          break;
-    case 3:
+    case GoingUp:
          tft.print ("going up");
          break;
     };
+#endif
+
+    switch (state) {
+    case Up:
+      delay(1000);
+      break;
+    case Down:
+      delay(100);
+      break;
+    case GoingDown:
+      SPI.beginTransaction(settings);
+      tft.fillScreen(BLACK);
+      bmpDraw("q1.bmp",0,0);
+      SPI.endTransaction();
+      delay(3000);
+      break;
+    case GoingUp:
+      SPI.beginTransaction(settings);
+      tft.fillScreen(BLACK);
+
+      tft.setTextColor(WHITE);
+
+      switch (random(10)) {
+      case 0:
+        tft.setTextSize(4);
+        tft.setCursor(16,50);
+        tft.printf(F("Yes!"));
+        break;
+      case 1:
+        tft.printf(F("Never!"));
+        break;
+      case 2:
+        tft.printf(F("Too spooky to tell!"));
+        break;
+      case 3:
+        tft.printf(F("The answer is undead."));
+        break;
+      case 4:
+        tft.printf(F("Only the bats know."));
+        break;
+      case 5:
+        tft.printf(F("Nevermore!"));
+        break;
+      case 6:
+        tft.printf(F("Certainly!"));
+        break;
+      case 7:
+        tft.printf(F("Believe it!"));
+        break;
+      case 8:
+        tft.printf(F("Of course!"));
+        break;
+      case 9:
+        tft.printf(F("Perhaps."));
+        break;
+      }
+      SPI.endTransaction();
+      delay(5000);
+      SPI.beginTransaction(settings);
+      bmpDraw("8ball2.bmp",0,0);
+      SPI.endTransaction();
+      break;
+    };
   }
-  delay(1000);
+
 }
+
+/*
+8ball1.bmp
+8ball2.bmp
+Scytheman.bmp
+cheshire.bmp
+creep1.bmp
+creep2.bmp
+creep3.bmp
+creep4.bmp
+creep5.bmp
+creep6.bmp
+ghost1.bmp
+ghost2.bmp
+goblin1.bmp
+hat.bmp
+ninjghst.bmp
+pumpkin.bmp
+q1.bmp
+wizard1.bmp
+
+*/
