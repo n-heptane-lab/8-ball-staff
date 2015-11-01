@@ -317,6 +317,7 @@ void setup(void) {
 #ifdef DEBUG
   Serial.begin(9600);
 #endif
+  randomSeed(analogRead(0));
   setupOLED();
   initSensors();
 }
@@ -413,15 +414,441 @@ void loop() {
       tft.fillScreen(BLACK);
       bmpDraw("q1.bmp",0,0);
       SPI.endTransaction();
-      delay(3000);
+      delay(100);
       break;
     case GoingUp:
-      SPI.beginTransaction(settings);
+      //      SPI.beginTransaction(settings);
       tft.fillScreen(BLACK);
-
+      // SPI.end();
+      SPI.beginTransaction(settings);
       tft.setTextColor(WHITE);
 
-      switch (random(10)) {
+      switch (random(60)) {
+      case 0:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("You mayrely onit"));
+        break;
+      case 1:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("I have a\nheadache"));
+        break;
+      case 2:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("ChancesAren't\nGood"));
+        break;
+      case 3:
+        tft.setTextSize(3);
+        tft.setCursor(0,50);
+        tft.printf(F("Looks\nlike\nyes"));
+        break;
+      case 4:
+        tft.setTextSize(5);
+        tft.setCursor(16,50);
+        tft.printf(F("NO!"));
+        break;
+      case 5:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Better\nchance\nlater"));
+        break;
+      case 6:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F(":|\Not a\ngood\nchance"));
+        break;
+      case 7:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Witch:\nYes\nMy\nPretty"));
+        break;
+      case 8:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Could\ngo\neither\nway"));
+        break;
+      case 9:
+        tft.setTextSize(5);
+        tft.setCursor(0,50);
+        tft.printf(F("Maybe"));
+        break;
+      case 10:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("If you\nown a\npet, yes"));
+        break;
+      case 11:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Good\nChanceslie on\nthe\nhorizon"));
+        break;
+      case 12:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Captainsais:\nYESS!"));
+        break;
+      case 13:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("It is\nlikely"));
+        break;
+      case 14:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Mew?\nMrrrow?"));
+        break;
+      case 15:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("The moonshines\non yes"));
+        break;
+      case 16:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Oh comeon,\nno way"));
+        break;
+      case 17:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Only ifyou\ntruly\nbelieve"));
+        break;
+      case 18:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("A unicorn would be more likely"));
+        break;
+      case 19:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("I don't\nthink so"));
+        break;
+      case 20:
+        tft.setTextSize(5);
+        tft.setCursor(0,50);
+        tft.printf(F(":("));
+        break;
+      case 21:
+        tft.setTextSize(5);
+        tft.setCursor(0,50);
+        tft.printf(F(":)"));
+        break;
+      case 22:
+        tft.setTextSize(5);
+        tft.setCursor(0,50);
+        tft.printf(F(":O"));
+        break;
+      case 23:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Just not possible, I'm afraid"));
+        break;
+      case 24:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Never\nask\nthat"));
+        break;
+      case 25:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("La, la\nla\nlaaaaa"));
+        break;
+      case 26:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("I'm an 8-ball, how should I know?"));
+        break;
+      case 27:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("I can't\ntell the\nfuture, sorry"));
+        break;
+      case 28:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Sort of..."));
+        break;
+      case 29:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("You\ncould\nsay\nthat"));
+        break;
+      case 30:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("There's\nno\nhope"));
+        break;
+      case 31:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Yesss,\nmaster!"));
+        break;
+      case 32:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("Monsters\nlike\nto party"));
+        break;
+      case 33:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("As sure as it rains on Oct 31"));
+        break;
+      case 34:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Who\nknows?"));
+        break;
+      case 35:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("Depends\nAre you\ngood\nor evil?"));
+        break;
+      case 36:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Why\nwould\nyou ask\nthat?"));
+        break;
+      case 37:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("Zzzzt!\nMalfunction"));
+        break;
+      case 38:
+        tft.setTextSize(2);
+        tft.setCursor(0,50);
+        tft.printf(F("Seriously?"));
+        break;
+      case 39:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("Call 311,\nthey'll\ntell ya"));
+        break;
+      case 40:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Pretty\ngood \nchances"));
+        break;
+      case 41:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("You\nshouldn't\nask"));
+        break;
+      case 42:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("If you\nlike\ncandy\ncorn"));
+        break;
+      case 43:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("If you give up your chocolate"));
+        break;
+      case 44:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("If you're wearing black"));
+        break;
+      case 45:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Witches\nsay\nno"));
+        break;
+      case 46:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Ask a\nreal\npsychic"));
+        break;
+      case 47:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("Vampires\nsay\nyes"));
+        break;
+      case 48:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("The\npyramid\neye!!!"));
+        break;
+      case 49:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Ooooo\nOoooo"));
+        break;
+      case 50:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("If you're among the living"));
+        break;
+      case 51:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Can't\nyou see the\nfuture?"));
+        break;
+      case 52:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("You are\ngetting\nsleepy..."));
+        break;
+      case 53:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Gaze\ninto\nthe\ncrystal!"));
+        break;
+      case 54:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("Watch\nout\nfor\naliens"));
+        break;
+      case 55:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("If you\nsee a\nblack cat"));
+        break;
+      case 56:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("The mistis too\nthick"));
+        break;
+      case 57:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("What was\nthe\nquestion,\nagain?"));
+        break;
+      case 58:
+        tft.setTextSize(3);
+        tft.setCursor(0,0);
+        tft.printf(F("I can\nhear\nthe\nvoices"));
+        break;
+      case 59:
+        tft.setTextSize(2);
+        tft.setCursor(0,0);
+        tft.printf(F("I'm\nignoring\nyou"));
+        break;
+      }
+      /*
+Whispers: you may…
+
+You may rely on it
+
+I have a headache
+
+Chances Aren’t Good
+
+Looks like yes
+
+NO!
+
+Better chance later
+
+:| Not a good chance
+
+Witch: Yes My Pretty
+
+Could go either way
+
+Maybe
+
+If you own a pet, yes
+
+Good Chances lie on the horizon
+
+Captain sais: YESS!
+
+It is likely
+
+Mew? Mrrrow?
+
+The moon shines on yes
+
+Oh come on, no way
+
+Only if you truly believe
+
+A unicorn would be more likely
+
+I don’t think so
+
+Just not possible, I’m afraid
+
+:(
+
+:)
+
+:O
+
+Never ask that
+
+La, la la laaaaa
+
+I’m an 8-ball, how should I know?
+
+I can’t tell the future, sorry
+
+Sort of…
+
+You could say that
+
+There’s no hope
+
+Yesss, master!
+
+Monsters like to party
+
+As sure as it rains on Oct 31
+
+Who knows?
+
+Depends - are you good or evil?
+
+Why would you ask that?
+
+Zzzzt! Malfunction
+
+Seriously?
+
+Call 311, they’ll tell ya
+
+Pretty good chances
+
+You shouldn’t ask
+
+If you like candy corn
+
+If you give up your chocolate
+
+If you’re wearing black
+
+Witches say no
+
+Ask a real psychic
+
+Vampires say yes
+
+The pyramid eye!!!
+
+OooooOoooo
+
+If you’re among the living
+
+Can’t you see the future?
+
+You are getting sleepy…
+
+Gaze into the crystal!
+
+Watch out for aliens
+
+If you see a black cat
+
+The mist is too thick
+
+What was the question, again?
+
+I can hear the voices
+
+I’m ignoring you
+      */
+      /*
       case 0:
         tft.setTextSize(4);
         tft.setCursor(16,50);
@@ -454,7 +881,8 @@ void loop() {
       case 9:
         tft.printf(F("Perhaps."));
         break;
-      }
+      */
+
       SPI.endTransaction();
       delay(5000);
       SPI.beginTransaction(settings);
